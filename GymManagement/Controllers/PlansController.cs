@@ -1,4 +1,3 @@
-﻿using GymManagement.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
