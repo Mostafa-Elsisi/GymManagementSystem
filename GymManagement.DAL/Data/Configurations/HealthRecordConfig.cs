@@ -1,6 +1,7 @@
 ﻿using GymManagement.DAL.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace GymManagement.DAL.Data.Configurations
 {
@@ -13,6 +14,12 @@ namespace GymManagement.DAL.Data.Configurations
 
             builder.Property(x => x.Note)
                    .HasMaxLength(500);
+
+            builder.Property(h => h.Height)
+                    .HasPrecision(5, 2);
+
+            builder.Property(h => h.Weight)
+                   .HasPrecision(5, 2);
         }
     }
 }
