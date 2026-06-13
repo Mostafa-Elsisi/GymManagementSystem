@@ -27,12 +27,12 @@ namespace GymManagement.PL.Controllers
         public async Task<IActionResult> TrainerDetails(int id, CancellationToken ct)
         {
             var trainer = await _trainerService.TrainerDetailsAsync(id, ct);
-            if (trainer is null)
+            if (! trainer.success)
             {
-                TempData["ErrorMessage"] = "Member Not Found.";
+                TempData["ErrorMessage"] = trainer.error;
                 return RedirectToAction(nameof(Index));
             }
-            return View(trainer);
+            return View(trainer.value);
         }
 
         #region Create 
@@ -49,10 +49,10 @@ namespace GymManagement.PL.Controllers
 
             var result = await _trainerService.CreateTrainerAsync(model, ct);
 
-            if (result)
+            if (result.success)
                 TempData["SuccessMessage"] = "Trainer Created Successfully";
             else
-                TempData["ErrorMessage"] = "Failed To Create Trainer";
+                TempData["ErrorMessage"] = result.error;
 
 
             return RedirectToAction(nameof(Index));
@@ -67,12 +67,12 @@ namespace GymManagement.PL.Controllers
         {
 
             var trainer = await _trainerService.GetTrainerToUpdatAsync(id, ct);
-            if (trainer is null)
+            if (!trainer.success)
             {
-                TempData["ErrorMessage"] = "Trainer Not Found.";
+                TempData["ErrorMessage"] = trainer.error;
                 return RedirectToAction(nameof(Index));
             }
-            return View(trainer);
+            return View(trainer.value);
         }
 
 
@@ -83,12 +83,12 @@ namespace GymManagement.PL.Controllers
 
             var result = await _trainerService.UpdateTrainerDetailsAsync(id, model, ct);
 
-            if (result)
+            if (result.success)
             {
                 TempData["SuccessMessage"] = "Trainer Updated Successfully";
                 return RedirectToAction(nameof(Index));
             }
-            TempData["ErrorMessage"] = "Failed To Update Trainer";
+            TempData["ErrorMessage"] = result.error;
             return View(model);
         }
         #endregion
@@ -98,9 +98,9 @@ namespace GymManagement.PL.Controllers
         public IActionResult Delete(int id, CancellationToken ct)
         {
             var trainer = _trainerService.TrainerDetailsAsync(id, ct).Result;
-            if (trainer is null)
+            if (!trainer.success)
             {
-                TempData["ErrorMessage"] = "Trainer Not Found.";
+                TempData["ErrorMessage"] = trainer.error;
                 return RedirectToAction(nameof(Index));
             }
             return View();
@@ -111,7 +111,7 @@ namespace GymManagement.PL.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id, CancellationToken ct)
         {
             var member = await _trainerService.RemoveTrainerAsync(id, ct);
-            if (member)
+            if (member.success)
             TempData["SuccessMessage"] = "Trainer Deleted Successfully";
             else
              TempData["ErrorMessage"] = "Failed To Delete Trainer";

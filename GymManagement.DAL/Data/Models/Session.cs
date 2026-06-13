@@ -8,7 +8,7 @@ namespace GymManagement.DAL.Data.Models
 {
     public class Session :BaseEntity
     {
-        public string  Descripton { get; set; } =default!;
+        public string Description { get; set; } =default!;
         public int Capacity { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

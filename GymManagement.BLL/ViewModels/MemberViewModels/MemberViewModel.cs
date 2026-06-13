@@ -1,4 +1,5 @@
 ﻿using GymManagement.DAL.Data.Models;
+using GymManagement.DAL.Data.Models.Enums;
 
 namespace GymManagement.BLL.ViewModels.MemberViewModel
 {
@@ -13,8 +14,8 @@ namespace GymManagement.BLL.ViewModels.MemberViewModel
         public string Gender { get; set; }
 
         //Member Details
-        public string DateOfBirth { get;  set; }
-        public string Address {  get; set; }
+        public string? DateOfBirth { get;  set; }
+        public string? Address {  get; set; }
         public string? PlanName { get; set; }
         public string? MemberShipStartDate { get; set; } = null;
         public string? MemberShipEndtDate { get; set; } = null;
