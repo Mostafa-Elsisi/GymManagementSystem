@@ -1,4 +1,5 @@
-﻿using GymManagement.BLL.Services.Interfaces;
+﻿using GymManagement.BLL.Services.Attachment;
+using GymManagement.BLL.Services.Interfaces;
 using GymManagement.BLL.ViewModels.MemberViewModel;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,10 +8,12 @@ namespace GymManagement.PL.Controllers
     public class MembersController : Controller
     {
         private readonly IMemberService _memberService;
+        private readonly IAttachmentService _attachmentService;
 
-        public MembersController(IMemberService memberService)
+        public MembersController(IMemberService memberService, IAttachmentService attachmentService)
         {
             _memberService = memberService;
+            _attachmentService = attachmentService;
         }
 
 
@@ -20,7 +23,7 @@ namespace GymManagement.PL.Controllers
             return View(members);
         }
 
-       
+
         [HttpGet]
         public async Task<IActionResult> MemberDetails(int id, CancellationToken ct)
         {
@@ -34,7 +37,7 @@ namespace GymManagement.PL.Controllers
         }
 
 
-        
+
         [HttpGet]
         public async Task<IActionResult> MemberHealthRecordDetails(int id, CancellationToken ct)
         {
@@ -47,9 +50,24 @@ namespace GymManagement.PL.Controllers
             return View(record.value);
         }
 
+        #region Get Member Photo
+        [HttpGet]
+        public async Task<IActionResult> GetMemberPhoto(int id, CancellationToken ct)
+        {
+            var member = await _memberService.MemberDetailsAsync(id, ct);
+            if (member is null || !member.success || string.IsNullOrWhiteSpace(member.value?.Photo))
+                return NotFound();
+
+            var result = _attachmentService.GetFile(member.value.Photo, "MembersPhoto");
+            if(result is null) return NotFound();
+
+            return File(result.Value.stream, result.Value.contentType);
+        }
+        #endregion
+
 
         #region Create
-        
+
 
         [HttpGet]
         public IActionResult Create() => View();
@@ -76,7 +94,7 @@ namespace GymManagement.PL.Controllers
         #endregion
 
         #region Edit
-        
+
         [HttpGet]
         public async Task<IActionResult> Edit(int id, CancellationToken ct)
         {
@@ -108,7 +126,7 @@ namespace GymManagement.PL.Controllers
         #endregion
 
         #region Delete
-        
+
         [HttpGet]
         public IActionResult Delete(int id, CancellationToken ct)
         {

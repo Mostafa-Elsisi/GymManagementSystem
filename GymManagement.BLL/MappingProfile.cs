@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using GymManagement.BLL.ViewModels.MemberShipViewModel;
 using GymManagement.BLL.ViewModels.MemberViewModel;
 using GymManagement.BLL.ViewModels.PlanViewModel;
 using GymManagement.BLL.ViewModels.SessionViewModels;
@@ -15,6 +16,7 @@ namespace GymManagement.BLL
             MapSession();
             MapPlan();
             MapTrainer();
+            MapMembership();
 
         }
         private void MapMember()
@@ -99,6 +101,20 @@ namespace GymManagement.BLL
                     dest.Address.Street = src.Street;
                     dest.Address.City = src.City;
                 });
+        }
+
+        private void MapMembership()
+        {
+            CreateMap<Membership, MemberShipViewModel>()
+                .ForMember(dest => dest.MemberName, opt => opt.MapFrom(src => src.Member.Name))
+                .ForMember(dest => dest.PlanName, opt => opt.MapFrom(src => src.Plan.Name))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.CreatedAt));
+
+            CreateMap<CreateMemberShipViewModel, Membership>();
+
+            CreateMap<Member, MemberSelectViewModel>();
+           
+            CreateMap<Plan, PlanSelectViewModel>();
         }
 
     }

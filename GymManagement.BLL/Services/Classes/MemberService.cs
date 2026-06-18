@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GymManagement.BLL.Common;
+using GymManagement.BLL.Services.Attachment;
 using GymManagement.BLL.Services.Interfaces;
 using GymManagement.BLL.ViewModels.MemberViewModel;
 using GymManagement.DAL.Data.Models;
@@ -12,11 +13,13 @@ namespace GymManagement.BLL.Services.Classes
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IAttachmentService _attachmentService;
 
-        public MemberService(IUnitOfWork unitOfWork, IMapper mapper)
+        public MemberService(IUnitOfWork unitOfWork, IMapper mapper,IAttachmentService attachmentService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _attachmentService = attachmentService;
         }
 
         public async Task<Result> CreateMemberAsync(CreateMemberViewModel model, CancellationToken ct = default)
@@ -30,16 +33,29 @@ namespace GymManagement.BLL.Services.Classes
             if (await _unitOfWork.GetRepository<Member>().AnyAsync(m => m.Phone == model.Phone, ct))
                 return Result.Validation("Phone Already Exist !!");
 
+            //Upload Photo
+
+            var storedPhotoName = await _attachmentService.UploadFileAsync(model.PhotoFile.OpenReadStream(), model.PhotoFile.FileName, "MembersPhoto", ct);
+            if (storedPhotoName is null)
+                return Result.Validation("Failed To Upload Photo , Is Not Valid !");
+
+
+
             // else Return True Add Member
             var member = _mapper.Map<Member>(model);
-
+            member.Photo = storedPhotoName;
 
             _unitOfWork.GetRepository<Member>().Add(member);
             var result = await _unitOfWork.SaveChangesAsync(ct);
-
-            return result > 0 ? Result.OK() : Result.Fail("Failed To Create Member");
-
+            if (result > 0)
+                return Result.OK();
+            else
+            {
+                _attachmentService.Delete(storedPhotoName, "MembersPhoto");
+                return Result.Fail("Failed To Create Member");
+            }
         }
+
 
         public async Task<IEnumerable<MemberViewModel>> GetAllMembersAsync(CancellationToken ct = default)
         {
