@@ -1,15 +1,64 @@
+using System.Threading.Tasks;
+using GymManagement.BLL;
+using GymManagement.BLL.Services.Attachment;
+using GymManagement.BLL.Services.Classes;
+using GymManagement.BLL.Services.Interfaces;
+using GymManagement.DAL.Data;
+using GymManagement.DAL.Data.DAtaSeeding;
+using GymManagement.DAL.Data.Models;
+using GymManagement.DAL.Repositories.Classes;
+using GymManagement.DAL.Repositories.Interfaces;
+using GymManagement.PL;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 namespace GymManagement
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddDbContext<GymDbContext>(
+            options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            //builder.Services.AddScoped<IPlanRepository, PlanRepository>(); //DI ==> Dependancy Injection
+
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+            builder.Services.AddScoped<IMemberShipRepository, MemberShipRepository>();
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+
+
+            builder.Services.AddScoped<IAttachmentService, AttachmentService>();
+
+            builder.Services.AddScoped<IMemberService, MemberService>();
+            builder.Services.AddScoped<IPlanService, PlanService>();
+            builder.Services.AddScoped<ITrainerService, TrainerService>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<ISessionService, SessionSevice>();
+            builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+            builder.Services.AddScoped<IBookingService, BookingService>();
+            builder.Services.AddScoped<IMemberShipService, MemberShipService>();
+            builder.Services.AddAutoMapper(m => m.AddProfile(new MappingProfile()));
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<GymDbContext>();
+
             var app = builder.Build();
+
+            await app.MigrateAndSeedDatabaseAsync();
+
+
+
+
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -20,14 +69,16 @@ namespace GymManagement
             }
 
             app.UseHttpsRedirection();
+            //app.UseStaticFiles();
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
+                pattern: "{controller=Account}/{action=login}/{id?}")
                 .WithStaticAssets();
 
             app.Run();
