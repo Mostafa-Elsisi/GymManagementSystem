@@ -1,10 +1,12 @@
 ﻿using GymManagement.BLL.Services.Interfaces;
 using GymManagement.BLL.ViewModels.SessionViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GymManagement.PL.Controllers
 {
+    [Authorize]
     public class SessionsController : Controller
     {
         private readonly ISessionService _sessionService;
@@ -17,7 +19,7 @@ namespace GymManagement.PL.Controllers
 
         public async Task<IActionResult> Index(CancellationToken ct)
         {
-            var sessions = await _sessionService.GetAllSessionAsync(ct);
+            var sessions = await _sessionService.GetAllSessionAsync(ct:ct);
             return View(sessions);
         }
 

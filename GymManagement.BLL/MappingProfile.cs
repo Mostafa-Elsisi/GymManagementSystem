@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using GymManagement.BLL.ViewModels.BookindViewModel;
 using GymManagement.BLL.ViewModels.MemberShipViewModel;
 using GymManagement.BLL.ViewModels.MemberViewModel;
 using GymManagement.BLL.ViewModels.PlanViewModel;
@@ -62,7 +63,8 @@ namespace GymManagement.BLL
 
             CreateMap<Session, SessionViewModel>()
                 .ForMember(dest => dest.TrainerName, opt => opt.MapFrom(src => src.Trainer.Name))
-                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName));
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName))
+                .ForMember(dest => dest.AvailableSlots, opt => opt.Ignore());
 
             CreateMap<Session, UpdateSessionViewModel>().ReverseMap();
         }
@@ -102,7 +104,6 @@ namespace GymManagement.BLL
                     dest.Address.City = src.City;
                 });
         }
-
         private void MapMembership()
         {
             CreateMap<Membership, MemberShipViewModel>()
@@ -116,6 +117,12 @@ namespace GymManagement.BLL
            
             CreateMap<Plan, PlanSelectViewModel>();
         }
+
+        //private void MapBooking()
+        //{
+        //    CreateMap<CreateBookingViewModel, Booking>()
+        //        .ForMember(dest  => dest.CreatedAt, opt => opt.MapFrom(src =>src.DateTime.Now))
+        //}
 
     }
 }

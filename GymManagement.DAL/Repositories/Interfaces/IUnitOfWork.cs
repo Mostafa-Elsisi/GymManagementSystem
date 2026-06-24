@@ -1,4 +1,5 @@
 ﻿using GymManagement.DAL.Data.Models;
+using GymManagement.DAL.Repositories.Classes;
 
 namespace GymManagement.DAL.Repositories.Interfaces
 {
@@ -10,5 +11,6 @@ namespace GymManagement.DAL.Repositories.Interfaces
         Task<int> SaveChangesAsync(CancellationToken ct);
         public ISessionRepository SessionRepository { get; }
         public IMemberShipRepository MemberShipRepository { get; }
+        public IBookingRepository BookingRepository { get; }
     }
 }

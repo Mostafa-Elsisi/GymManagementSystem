@@ -1,10 +1,12 @@
 ﻿using GymManagement.BLL.Services.Classes;
 using GymManagement.BLL.Services.Interfaces;
 using GymManagement.BLL.ViewModels.TrainerViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymManagement.PL.Controllers
 {
+    [Authorize]
     public class TrainersController : Controller
     {
         private readonly ITrainerService _trainerService;
@@ -14,15 +16,13 @@ namespace GymManagement.PL.Controllers
             _trainerService = trainerService;
         }
 
-        //Index
-        //Get All Trainers
+      
         public async Task<IActionResult> Index(CancellationToken ct)
         {
             var trainers = await _trainerService.GetTrainersAsync(ct: ct);
             return View(trainers);
         }
 
-        //GET Specific Trainer
         [HttpGet]
         public async Task<IActionResult> TrainerDetails(int id, CancellationToken ct)
         {

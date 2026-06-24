@@ -4,7 +4,7 @@
     {
 
         // BookingDate = CreatedAt Of BaseEntity
-        public bool IsAttended { get; set; }
+        public bool IsAttended { get; set; } = false;
 
         #region Relationships
         public Member Member { get; set; } = default!;

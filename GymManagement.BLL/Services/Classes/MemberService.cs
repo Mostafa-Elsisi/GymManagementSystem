@@ -99,9 +99,9 @@ namespace GymManagement.BLL.Services.Classes
                 return Result<MemberViewModel>.NotFound("Member Not Found");
             var model = _mapper.Map<Member, MemberViewModel>(member);
 
-            var ActtiveMemberShip = await _unitOfWork.GetRepository<Membership>().FirstOrDefaultAsync(m => m.Id == memberid && m.EndDate > DateTime.Now, ct: ct);
+            var ActtiveMemberShip = await _unitOfWork.GetRepository<Membership>().FirstOrDefaultAsync(m => m.MemberId == memberid && m.EndDate > DateTime.UtcNow, ct: ct);
 
-            if (ActtiveMemberShip is not null)
+            if (ActtiveMemberShip != null)
             {
                 var ActivePlan = await _unitOfWork.GetRepository<Plan>().GetByIdAsync(ActtiveMemberShip.PlanId, ct);
                 model.PlanName = ActivePlan?.Name;
